@@ -1,0 +1,410 @@
+<p align="center">
+  <a href="https://funkyton.com/"><img src="docs/brand/funkyton-mark-round-256.png" width="76" alt="FUNKYTON"></a>
+</p>
+<h1 align="center">
+  Medusa 2.0 on Railway: One-Click Deploy Template
+</h1>
+<h3 align="center">
+  Backend + Next.js Storefront + Postgres + Redis + MeiliSearch + S3 file storage
+</h3>
+<p align="center">
+Deploys the official open-source Medusa 2.0 release and its Next.js starter storefront to Railway, with every service wired, seeded, and health-checked automatically.</p>
+<p align="center">
+  <sub>An independent project by <a href="https://funkyton.com/">FUNKYTON</a>, not affiliated with MedusaJS, Inc. or Railway. "Medusa" is a trademark of MedusaJS, Inc.</sub>
+</p>
+
+<p align="center">
+  <img alt="Medusa 2.22.1" src="https://img.shields.io/badge/Medusa-2.22.1-1a1a1a">
+  <img alt="Next.js 15" src="https://img.shields.io/badge/Next.js-15-1a1a1a">
+  <img alt="3,800+ deploys" src="https://img.shields.io/badge/Railway%20deploys-3%2C800%2B-6c5ce7">
+  <a href="LICENSE"><img alt="MIT license" src="https://img.shields.io/github/license/rpuls/medusajs-2.0-for-railway-boilerplate"></a>
+  <a href="https://github.com/rpuls/medusajs-2.0-for-railway-boilerplate/commits"><img alt="Last commit" src="https://img.shields.io/github/last-commit/rpuls/medusajs-2.0-for-railway-boilerplate"></a>
+</p>
+
+<h2 align="center">
+  Need help?<br>
+  <a href="https://funkyton.com/medusajs-2-0-is-finally-here/">Step by step deploy guide, and video instructions</a>
+</h2>
+
+<p align="center">
+  <sub>Selling wholesale, or hosting other people's shops? There are sibling templates.</sub><br>
+  <a href="#other-shapes-of-store">B2B</a> &nbsp;&middot;&nbsp; <a href="#other-shapes-of-store">Multi-vendor marketplace</a>
+</p>
+
+## A complete, working store from the first deploy
+
+One click provisions and connects every service (Postgres, Redis, MeiliSearch, S3-compatible storage, backend and storefront), runs the migrations, seeds the database, creates your admin user with a strong random password, and shares API keys between the services automatically. When the health checks go green, the store is live. You handle products; the template handles plumbing.
+
+**And you can run it from ChatGPT or Claude.** Every store also gets its own MCP server, which this template adds on top of Medusa's open-source release. Connect an AI assistant from the admin and ask it for a sales report, a restock list, a new product, or the regions, shipping and tax rates for a country you want to start selling to. Anything shoppers would see waits for your click. [How it works](#run-the-store-from-an-ai-assistant).
+
+[![Deploy on Railway](https://railway.com/button.svg)](https://railway.com/deploy/medusajs-2-0-storefront?referralCode=-Yg50p)
+
+**Updated to Medusa 2.22.1 on 29 October 2026.**
+
+Deployed more than 3,800 times since 2023, and over 1,100 of those stores are still serving customers today.
+
+## What gets deployed
+
+Seven services in one Railway project, plus whichever third-party integrations you
+configure.
+
+![Architecture diagram. Shoppers reach the Next.js storefront and the store owner reaches the Medusa backend directly. The storefront calls the backend for the Store API, product search included. The backend owns Postgres, Redis, MeiliSearch and a bucket, and a read-only proxy serves product images out of that bucket to shoppers. All seven run inside one Railway project, and the backend calls Stripe and Resend outside it.](docs/diagrams/railway-stack.png)
+
+The seventh, **Bucket-proxy**, is the one that needs explaining. Railway buckets
+serve nothing publicly, so a product image saved to one cannot be loaded by a
+browser. The proxy is a small Railway Function that answers public `GET` and
+`HEAD` requests by reading from the bucket, and `S3_FILE_URL` points at it so
+image URLs resolve. It is deliberately read-only: it never exposes `PUT`,
+`POST`, `PATCH` or `DELETE`.
+
+![MedusaJS 2.0 backend, Next.js storefront, Postgres, Redis, MeiliSearch, a bucket and its read-only proxy running as seven connected services in one Railway project](https://res.cloudinary.com/hczpmiapo/image/upload/q_auto,f_auto/v1788184544/ghost-blog-images/medusajs-2-on-railway-services-overview-png.png)
+
+## About this boilerplate
+
+A monorepo combining the official open-source MedusaJS 2.0 backend with the Medusa team's Next.js starter storefront, pre-configured for one-click deployment on [railway.app](https://railway.app?referralCode=-Yg50p).
+
+Medusa is used as published, with no fork and no patches to the core, so the [official Medusa documentation](https://docs.medusajs.com/) applies as normal. What this template adds on top is the Railway deployment setup and a set of preconfigured integrations (MeiliSearch search, Stripe payments, Resend email, S3-compatible file storage), all built with Medusa's own module and plugin APIs.
+
+### Who this template is for
+
+Individuals and small operations. Someone trying e-commerce for the first time,
+a personal web shop, a merch store, a side project, an agency putting up a small
+client store, a developer evaluating Medusa. Plenty of real shops run on exactly
+this and never need anything more.
+
+It is self-hosting, so upgrades, backups and uptime are yours.
+
+**Look at Medusa Cloud if there is a serious business behind the store.** Running
+this template makes you two things at once: the person minding products, orders
+and customers, and the person minding the servers underneath them. If you would
+rather be less hands-on with the servers, or uptime is mission critical, look at
+[Medusa Cloud](https://medusajs.com/cloud), the official platform from the Medusa
+core team. Choosing it also supports the continued development of the open source
+Medusa that everything here is built on.
+
+> **Where to get help**
+>
+> - **A deploy that will not come up, or anything about the Railway side:** the template's [thread on Railway Station](https://station.railway.com/templates/medusajs-2-0-storefront-c69ac579). Other people running this template read it, so an answer there helps the next person too.
+> - **A bug in this repo, or a change you want:** [open an issue](https://github.com/rpuls/medusajs-2.0-for-railway-boilerplate/issues).
+> - **Medusa itself,** how a module works or how to build on it: the [official docs](https://docs.medusajs.com/) and Medusa's own community channels.
+
+### This template vs. wiring it up yourself
+
+| | This template | Doing it by hand |
+| --- | --- | --- |
+| Time to a running store | Minutes | Half a day, and longer the first time |
+| Seven services provisioned and networked | One click | Seven services to create, and the connection strings to copy between them |
+| Migrations and seed data | Migrations run on every boot, the seed on the first | `medusa db:migrate`, then write or adapt a seed script |
+| Admin user | Created for you with a random password | Create it over the CLI after the database is up |
+| Publishable API key | Generated and handed to the storefront automatically | Create it in the admin, then paste it into the storefront's environment |
+| MeiliSearch | Provisioned, keyed, and the catalogue indexed | Install and configure the plugin, mint a search-only key, wire the storefront |
+| Stripe, Resend, S3 | Configuration slots already wired, add your keys | Install and register each provider yourself |
+| AI assistants | A store MCP server with OAuth sign-in, ready on the first deploy | Write an MCP server and an OAuth authorization server |
+| Health checks | Configured per service | Yours to add |
+| Staying current | Pull the repo and redeploy | Yours to track |
+
+Nothing here is magic, and none of it is locked in. It is the same Medusa you would install by hand, with the setup already done.
+
+## Preconfigured 3rd party integrations
+
+- **S3-compatible file storage.** Uses Medusa's stock S3 file provider, and works with any S3-compatible object storage: Railway buckets, AWS S3, Cloudflare R2, MinIO. Configure with the `S3_*` environment variables (see `backend/.env.template`). Legacy `MINIO_*` variables from older deployments of this template are still supported as a fallback (ignored as soon as any `S3_*` variable is set). Note: the bucket must already exist and, for product images, allow public read (via a bucket policy). The backend does not create buckets or set policies. Uploads are sent without ACL headers by default (compatible with Railway buckets, R2 and new AWS buckets); set `S3_ACL=public-read` only for legacy ACL-based buckets.
+- **Resend email.** Order confirmations, admin invites and password resets, as react-email templates you can edit and preview locally with `pnpm email:dev`. [Watch setup video](https://youtu.be/pbdZm26YDpE?si=LQTHWeZMLD4w3Ahw). Special thanks to [aleciavogel](https://github.com/aleciavogel) for the Resend notification service and react-email implementation. [README](backend/src/modules/email-notifications/README.md)
+- **Stripe payments.** [Watch setup video](https://youtu.be/dcSOpIzc1Og)
+- **MeiliSearch** by [Rokmohar](https://github.com/rokmohar/medusa-plugin-meilisearch). Adds product search to your store, and is configured automatically when deployed from the Railway template. For non-Railway setups: [watch setup video](https://youtu.be/hrXcc5MjApI).
+
+All four are optional. A store deploys and runs without any of them; each one switches on when its environment variables are present.
+
+## Other shapes of store
+
+Same one-click Railway setup, a different commerce model underneath. Both are
+maintained here alongside this one.
+
+| Template | Fits when | |
+| --- | --- | --- |
+| **[Medusa B2B](https://github.com/rpuls/medusa-b2b-for-railway)** | You sell wholesale. Company accounts with employees and spending limits, quote requests, and approvals before an order goes through. A Railway distribution of the official Medusa B2B starter. | [Deploy](https://railway.com/deploy/medusajs-20-storefront-b2b?referralCode=-Yg50p) |
+| **[MercurJS Marketplace](https://github.com/rpuls/mercurjs-for-railway-boilerplate)** | You host other people's shops. Many sellers on one storefront, each with their own vendor dashboard, and an owner admin above them. Built on Medusa. | [Deploy](https://railway.com/deploy/mercurjs?referralCode=-Yg50p) |
+
+This template is the plain one: a single seller, a single storefront. Start here
+unless you recognised yourself above.
+
+There is also a [trial version](https://railway.com/deploy/medusajs-20-storefront-trial--Fb6KUX?referralCode=-Yg50p)
+of this same template, cut down to four services so it fits inside Railway's
+free tier. It leaves out Redis, MeiliSearch and object storage (search still
+works, on Postgres), so treat it as a way to see what you get for free rather
+than as somewhere to build a shop. Move to the full
+template above when you want to sell something.
+
+## Local development
+
+<details>
+<summary><b>Local infrastructure with docker compose</b> (optional, recommended)</summary>
+
+<br>
+
+The repository root contains a `docker-compose.yml` that mirrors the services provisioned by the Railway template: **postgres**, **redis**, **meilisearch** and an S3-compatible object store (**MinIO**, standing in for a Railway bucket).
+
+- `docker compose up -d` starts everything. A one-shot init job creates a public `medusa-media` bucket automatically.
+- The commented `S3_*` and `MEILISEARCH_*` values in `backend/.env.template` match these services. Uncomment them in your `backend/.env` to enable file storage and search locally.
+- MinIO console: http://localhost:9005 (login: `medusa` / `supersecret`), MeiliSearch: http://localhost:7700.
+
+</details>
+
+<details>
+<summary><b>Backend</b></summary>
+
+<br>
+
+Video instructions: https://youtu.be/PPxenu7IjGM
+
+```bash
+cd backend
+cp .env.template .env       # then read it, the top of the file matters
+pnpm install
+pnpm ib                     # migrate, and seed an empty database
+pnpm dev                    # API on :9000, admin dashboard on :9000/app
+```
+
+To connect to your deployed database from your local machine, copy the `DATABASE_URL` value from Railway into your `.env`. `pnpm ib` migrates that database to your local Medusa version, so run it only against a database you are willing to change.
+
+`pnpm build && pnpm start` compiles the project and runs from the compiled source, which is what Railway does. Use it to reproduce a deploy-only problem.
+
+More detail in [backend/README.md](backend/README.md).
+
+</details>
+
+<details>
+<summary><b>Storefront</b></summary>
+
+<br>
+
+Video instructions: https://youtu.be/PPxenu7IjGM
+
+```bash
+cd storefront
+cp .env.local.template .env.local
+pnpm install
+pnpm dev                    # http://localhost:8000
+```
+
+A running backend on port 9000 is required. The storefront fetches its publishable API key from the backend at boot, so `next build` on its own will not work.
+
+More detail in [storefront/README.md](storefront/README.md).
+
+</details>
+
+<details>
+<summary><b>Requirements</b></summary>
+
+<br>
+
+- **Node 22.22 or later.** Both packages carry a `.nvmrc`.
+- **pnpm.** This project is pnpm-only: the build scripts call pnpm directly, so an npm or yarn install gets you a tree that works locally and a deploy that fails.
+- **Postgres.** Required. Set up automatically by the Railway template.
+- **Redis.** Optional, falls back to a simulated in-memory bus. Set up automatically by the Railway template.
+- **S3-compatible storage.** Optional, falls back to local disk, which is ephemeral on Railway. Set up automatically by the Railway template.
+- **MeiliSearch.** Optional, and needs server 1.20 or later. Without it, search falls back to Medusa's Postgres provider. Set up automatically by the Railway template.
+
+</details>
+
+## Run the store from an AI assistant
+
+Every store comes with its own MCP server, so ChatGPT, Claude and other MCP
+clients can work on it. Open **AI assistants** in the admin, copy the server URL
+(`https://<your-backend>/mcp`), and add it to the assistant as a custom
+connector. The assistant opens a page on your backend where you sign in with
+your admin account and click Allow. From then on you can ask it things like
+"what sold best this month?", "which variants are about to run out?", "draft a
+product for the new linen shirt in three sizes" or "set me up to sell to the
+Netherlands".
+
+Medusa's open-source release has no MCP server for store data; this template
+builds one with Medusa's own modules, workflows and admin extensions, so it
+runs inside your backend and needs no other service.
+
+What it may do is deliberately narrow, and the consent page says so before you
+allow anything:
+
+- **It can** read products, stock, orders, customers (name, email, country and
+  order history only) and sales, create new products as drafts with their
+  stock, edit those drafts, suggest changes to published products, and propose
+  stock, warehouses, regions, shipping and tax rates.
+- **It cannot** publish, delete, change live prices, refund, cancel, export
+  customers, or change stock or settings itself. A suggestion waits on the
+  product page, and a proposal on the AI assistants page, until you apply or
+  discard it.
+
+Access lives in Postgres, survives restarts and redeploys, works without Redis
+(so the trial template has it too), and is revoked from the same admin page.
+Set `STORE_MCP_ENABLED=false` on the backend to switch it off. The details,
+including every tool, are in [docs/store-mcp.md](docs/store-mcp.md).
+
+Shoppers' assistants are covered too. The storefront serves
+[`/llms.txt`](https://llmstxt.org/), the whole catalogue as one Markdown file
+with prices, options and links, plus how the region-prefixed URLs and checkout
+work. An agent asked to find or compare products reads the store in one
+request instead of crawling it. It lists only what any visitor can already see,
+and a product you publish appears in it straight away.
+
+They can buy, too. The storefront speaks the
+[Universal Commerce Protocol](https://ucp.dev/) and serves a shopper MCP server
+at `https://<your-storefront>/ucp/mcp`. A shopper adds that URL to ChatGPT,
+Claude or another assistant as a custom connector and asks for something: the
+assistant searches your catalogue, builds a cart with their email and address,
+and hands back a link. The link opens that cart in your own checkout, where
+they choose delivery and pay as usual, so no payment ever passes through the
+assistant. It needs no sign-in, because it can do nothing an anonymous visitor
+can't: read the published catalogue and build guest carts. Agents that look for
+it find it through `/.well-known/ucp`, and every product page also carries
+schema.org data and a Markdown version (add `.md` to its address).
+
+The checkout tells the assistant where your shipping, returns, terms and
+privacy pages are. The storefront ships those four as placeholders, marked on
+the page as example text, at `/<country>/shipping` and so on. Replace them with
+your own before you sell; they live in `storefront/src/app/[countryCode]/(main)/`.
+
+## Get your products into Google and ChatGPT
+
+When someone asks an AI assistant what to buy, the products it suggests come
+mostly from product feeds that stores send to Google and OpenAI. The storefront
+serves both, one row per variant, with the product page link (that variant
+preselected), photos, price, sale price, stock and brand, in the currency of
+the region that covers the country in the file name:
+
+| Program | Feed | Who can join |
+| --- | --- | --- |
+| Google Merchant Center: Shopping, AI Mode, Gemini | `https://<your-storefront>/feeds/google/<country>.xml` | Any store, free |
+| ChatGPT shopping | `https://<your-storefront>/feeds/openai/<country>.csv` | Stores OpenAI approves, currently in the US |
+
+**Google.** In [Merchant Center](https://merchants.google.com/), add your
+business and your storefront's URL. To verify the site, pick the HTML tag
+method, copy the code in its `content="..."` and set it as
+`GOOGLE_SITE_VERIFICATION` on the storefront service; once Railway has
+redeployed, click Verify. Set up shipping and a return policy in Merchant
+Center, which Google needs and does not read from the feed. Then add a product
+source from a file, fetched from a link: paste the feed URL for each country you
+sell to and choose a daily fetch. Google reviews the products within a few days
+and lists any it rejects, with the reason.
+
+**ChatGPT.** Apply at [chatgpt.com/merchants](https://chatgpt.com/merchants/).
+OpenAI does not fetch feeds; an approved store gets an SFTP account and must
+upload a fresh file at least daily. Set `OPENAI_FEED_SFTP_HOST`,
+`OPENAI_FEED_SFTP_USERNAME` and `OPENAI_FEED_SFTP_PASSWORD` (or
+`OPENAI_FEED_SFTP_PRIVATE_KEY`) on the backend service and it uploads
+`/feeds/openai/us.csv` every day; `OPENAI_FEED_COUNTRY` picks another country.
+Open that URL any time to see what would be sent. Buying inside ChatGPT is a
+separate OpenAI integration this template does not have, so shoppers click
+through to your store.
+
+Before you submit either one:
+
+- Set `NEXT_PUBLIC_STORE_NAME` on the storefront. It is the seller name, and the
+  brand of every product unless the product's metadata has a `brand` key, which
+  a store selling other makers' goods sets per product.
+- Give every product a photo. A product without one is still in the feed, so
+  that the program's report tells you which ones to fix.
+- Enter real barcodes (EAN or UPC) on variants that have one; both programs
+  match products by them.
+- Replace the placeholder shipping, returns, terms and privacy pages. The feeds
+  link them.
+
+Feeds list only published products with a price in that country's region, so
+nothing appears in them that a visitor cannot already see.
+
+## Building on it with a coding agent
+
+The repository carries an [AGENTS.md](AGENTS.md) for Codex, Claude Code, Cursor
+and other coding agents: how the repo is laid out, how to run it and its QA
+suite, and the Railway details an agent would otherwise get wrong.
+
+For Medusa itself, point your agent at Medusa's own material rather than what
+it remembers, because the APIs change between minor releases:
+
+- **Agent Skills**, free and with no account:
+  `npx skills add medusajs/medusa-agent-skills`, or in Claude Code
+  `/plugin marketplace add medusajs/medusa-agent-skills` followed by
+  `/plugin install medusa-dev@medusa`.
+- **[llms.txt](https://docs.medusajs.com/llms.txt)**, the documentation index
+  in plain text, readable by any agent.
+- **The docs MCP server** at `https://docs.medusajs.com/mcp`, optional. It asks
+  you to sign in with a Medusa Cloud account, so this repository does not set
+  it up for you. The Claude Code plugin above registers it; the skills work
+  without it.
+
+## FAQ
+
+### Is this the official Medusa deployment?
+
+No, it is an independent project by [FUNKYTON](https://funkyton.com/). It deploys the official open-source Medusa release as published, with no fork and no patches to the core, so the [official Medusa docs](https://docs.medusajs.com/) apply to your store exactly as written. What the template adds is the Railway deployment setup and the preconfigured integrations listed above.
+
+### How much does it cost to run Medusa on Railway?
+
+**The whole stack idles at 595 MB of memory, which is roughly \$7 a month of
+Railway resources for a low-traffic store.** Railway bills per second for what a
+service actually uses rather than for what you allocate to it, so a quiet shop
+costs very little to keep online.
+
+At that level the plan fee is most of the bill, not the servers. Hobby is \$5 a
+month including \$5 of usage, which puts a quiet store near \$7 all in. Pro is
+\$20 including \$20 of usage, absorbing the resource cost entirely. Real
+deployments of this template have sat between \$20 and \$25 a month on Pro.
+
+Per-service memory and CPU limits let you cap it further, with the catch that a
+CPU limit makes the store slower while a memory limit set too low restarts it
+mid-request.
+
+[Per-service measurements, the full arithmetic, and how to tune it](https://funkyton.com/medusajs-2-0-is-finally-here/)
+
+### Can I use Cloudflare R2 for product images?
+
+Yes. R2 is S3-compatible, so it uses the same `S3_*` variables as everything else. Set `S3_REGION=auto`, leave `S3_ACL` unset (R2 rejects ACL headers), and give the bucket public read access with a bucket policy rather than per-object ACLs. The same applies to Railway buckets and new AWS buckets.
+
+### Do I need Stripe and Resend to deploy?
+
+No. Every integration is optional and each one switches on only when its environment variables are present. Without Stripe the checkout offers manual payment; without Resend or SendGrid, no order confirmations are sent. You can add either later without redeploying from scratch.
+
+### Can I run it without MeiliSearch?
+
+Yes. Search is Medusa's own Search Module, and MeiliSearch is only the engine behind it. To drop it, remove the `MEILISEARCH_*` variables from the Backend service and the `NEXT_PUBLIC_SEARCH_*` ones from the Storefront, redeploy, then delete the MeiliSearch service. On its next boot the backend rebuilds the product index on Medusa's built-in Postgres search, and the storefront needs no change. That is how the trial template runs.
+
+The Postgres engine is simpler: it matches whole words, plurals included, but not partial words or typos, so "sweat" no longer finds the sweatshirt. Add MeiliSearch back and the index is rebuilt on it the same way.
+
+### Can I use npm or yarn?
+
+No. This project is pnpm-only. `backend/src/scripts/postBuild.js` calls `pnpm i --frozen-lockfile` directly when assembling the production server, so an npm or yarn install gives you a tree that works locally and a deploy that fails.
+
+### Can I change the storefront's design?
+
+Yes, that is the point. The homepage hero ships as a visibly dashed "example section" so you can tell the template's filler from your own work at a glance, and deleting it is a two-line change. The storefront is a standard Next.js App Router project with Tailwind.
+
+## Contributing and security
+
+- [CONTRIBUTING.md](CONTRIBUTING.md) covers setup, the QA test suite, and what gets merged quickly.
+- [SECURITY.md](SECURITY.md) covers how to report a vulnerability privately, and the two settings every deployer owns.
+- Licensed [MIT](LICENSE).
+
+If this template saved you a day, [sponsoring](https://github.com/sponsors/rpuls) keeps it maintained.
+
+## Useful resources
+
+- How to set up credit card payment with the Stripe payment module: https://youtu.be/dcSOpIzc1Og
+- https://funkyton.com/medusajs-2-0-is-finally-here/#successfully-deployed-whats-next
+
+---
+
+## Also from the maintainer
+
+Interested in digital independence through self-hosted open source? Take a look at **[My Own Suite](https://myownsuite.org/)**, a private cloud you run yourself: passwords, photos, files, documents and calendars, all on hardware you control. Free and open source under AGPL-3.0.
+
+[Website](https://myownsuite.org/) &middot; [Getting started](https://myownsuite.org/docs/getting-started) &middot; [GitHub](https://github.com/rpuls/my-own-suite)
+
+<p align="center">
+  <a href="https://funkyton.com/">
+    <div style="text-align: center;">
+      A template by,
+      <br>
+      <picture>
+        <img alt="FUNKYTON logo" src="https://res-5.cloudinary.com/hczpmiapo/image/upload/q_auto/v1/ghost-blog-images/funkyton-logo.png" width=200>
+      </picture>
+    </div>
+  </a>
+</p>

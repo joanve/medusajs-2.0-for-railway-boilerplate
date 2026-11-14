@@ -1,0 +1,72 @@
+{
+  "name": "medusa-2.0-boilerplate-backend",
+  "version": "0.0.2",
+  "description": "A Prebaked Medusa 2.0 backend",
+  "author": "Rasmus Puls",
+  "license": "MIT",
+  "keywords": [
+    "sqlite",
+    "postgres",
+    "typescript",
+    "ecommerce",
+    "headless",
+    "medusa"
+  ],
+  "scripts": {
+    "build": "medusa build && node src/scripts/postBuild.js",
+    "seed": "medusa exec ./src/scripts/seed.ts",
+    "ib": "node src/scripts/prepare-migrations.js && init-backend",
+    "start": "node src/scripts/prepare-migrations.js && init-backend && cd .medusa/server && medusa start --verbose",
+    "dev": "medusa develop",
+    "email:dev": "email dev --dir=./src/modules/email-notifications/templates --port=3002"
+  },
+  "dependencies": {
+    "@medusajs/admin-sdk": "2.22.1",
+    "@medusajs/admin-shared": "2.22.1",
+    "@medusajs/cli": "2.22.1",
+    "@medusajs/dashboard": "2.22.1",
+    "@medusajs/draft-order": "2.22.1",
+    "@medusajs/framework": "2.22.1",
+    "@medusajs/icons": "2.22.1",
+    "@medusajs/medusa": "2.22.1",
+    "@medusajs/notification-sendgrid": "2.22.1",
+    "@medusajs/payment-stripe": "2.22.1",
+    "@medusajs/ui": "4.2.8",
+    "@medusajs/workflow-engine-redis": "2.22.1",
+    "@modelcontextprotocol/sdk": "1.32.2",
+    "@react-email/components": "^1.0.1",
+    "@rokmohar/medusa-plugin-meilisearch": "2.4.0",
+    "medusajs-launch-utils": "0.2.0",
+    "react": "^18.3.1",
+    "react-dom": "^18.3.1",
+    "resend": "6.25.0",
+    "ssh2": "1.17.0"
+  },
+  "devDependencies": {
+    "@medusajs/test-utils": "2.22.1",
+    "@react-email/preview-server": "^5.1.0",
+    "@swc/core": "1.16.1",
+    "@types/node": "^22.19.1",
+    "@types/react": "^18.3.27",
+    "@types/react-dom": "^18.3.7",
+    "@types/ssh2": "1.15.6",
+    "react-email": "^5.1.0",
+    "ts-node": "^10.9.2",
+    "typescript": "^5.9.3"
+  },
+  "pnpm": {
+    "overrides": {
+      "fast-xml-parser": "5.5.8",
+      "protobufjs": "7.5.5"
+    },
+    "neverBuiltDependencies": [
+      "cpu-features",
+      "ssh2"
+    ]
+  },
+  "packageManager": "pnpm@9.10.0",
+  "engines": {
+    "node": ">=22.22",
+    "pnpm": ">=9"
+  }
+}
